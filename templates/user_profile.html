@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="text-align: center; color: rgb(50, 173, 78);">User Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.phone.label(class="form-label") }}
+            {{ form.phone(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control", readonly="readonly") }}
+        </div>
+        <div class="form-group">
+            {{ form.school.label(class="form-label") }}
+            {{ form.school(class="form-control") }}
+        </div>
+        <div class="form-group">
+            <label for="image">Profile Image</label><br>
+            <img src="{{ url_for('get_image', user_id=user.id) }}" alt="Profile Image" class="rounded-circle" style="width: 100px; height: 100px;">
+        </div>
+        <div style="text-align: center;">
+            <button id="login-button" type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

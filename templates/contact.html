@@ -1,0 +1,89 @@
+<!-- contact.html -->
+{% extends "base.html" %}
+{% block title %}Contact - My Blog{% endblock %}
+{% block content %}
+    <style>
+        /* CSS styles */
+        .flash-messages {
+            position: fixed;
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+        }
+
+        .flash-message {
+            padding: 15px 30px;
+            background-color: rgba(76, 175, 80, 0.9); /* Green background color */
+            color: #fff; /* White text color */
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow */
+            animation: fadeInOut 3s ease-in-out; /* Animation */
+        }
+
+        .flash-message p {
+            margin: 0;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+    
+    <section class="contact">
+        <!-- Your form code goes here -->
+         
+        
+        <div style="text-align: center;">
+            <h2><b>আমার সাথে যোগাযোগ করুন</b></h2>
+          </div>
+          
+        <!-- <p>If you have any questions or just want to get in touch, feel free to reach out using the form below!</p> -->
+        
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">নাম:</label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="আপনার নাম">
+            </div>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">ই-মেইল:</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="আপনার ই-মেইল">
+            </div>
+            
+            <div class="mb-3">
+                <label for="message" class="form-label">বার্তা:</label>
+                <textarea class="form-control" id="message" name="message" rows="4" placeholder="বার্তা লিখুন"></textarea>
+            </div>
+            
+            <!-- <button type="submit" class="btn btn-primary">সাবমিট</button> -->
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary">সাবমিট</button>
+              </div>
+              
+        </form>
+    </section>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="flash-message success">
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <script>
+            // JavaScript code to remove flash messages after 6 seconds
+            setTimeout(function(){
+                document.querySelector('.flash-messages').remove();
+            }, 3000);
+        </script>
+    </section>
+{% endblock %}

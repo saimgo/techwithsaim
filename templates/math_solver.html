@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+{% block title %}AI Marth Solver{% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Math Solver</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Add your custom styles here */
+/*         
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        } */
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+            transition: transform 0.3s ease-in-out;
+            max-width: 800px;
+            width: 100%; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+        
+        .container:hover {
+            transform: scale(1.05);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            width: 100%; /* Full width */
+            max-width: 400px; /* Limit width for form */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+        }
+        label {
+            margin: 10px 0 5px;
+            color: #666;
+            text-align: center; /* Center label text */
+        }
+        input, select {
+            width: calc(100% - 22px); /* Adjust width slightly to accommodate padding and border */
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px; /* Adjust font size as needed */
+            box-sizing: border-box; /* Ensure padding and border are included in width */
+        }
+        .button {
+            position: relative;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+            padding: 0.75rem 1rem;
+            background-color: rgb(0 107 179);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ffff;
+            gap: 5px;
+            font-weight: bold;
+            border: 3px solid #ffffff4d;
+            outline: none;
+            overflow: hidden;
+            font-size: 17px;
+            text-decoration: none;
+            width: 52%;
+            max-width: 250px;
+            margin-top: 20px;
+        }
+        .icon {
+            width: 18px;
+            height: 18px;
+            transition: all 0.3s ease-in-out;
+        }
+        .button:hover {
+            transform: scale(1.05);
+            border-color: #fff9;
+        }
+        .button:hover .icon {
+            transform: translateX(2px);
+        }
+        .button:hover::before {
+            animation: shine 1.5s ease-out infinite;
+        }
+        .button::before {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100%;
+            background-image: linear-gradient(
+                120deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.8),
+                rgba(255, 255, 255, 0) 70%
+            );
+            top: 0;
+            left: -100px;
+            opacity: 0.6;
+        }
+    
+        @keyframes shine {
+            0% {
+                left: -100px;
+            }
+            60% {
+                left: 100%;
+            }
+            to {
+                left: 100%;
+            }
+        }
+        /* Show matrix options when matrix operation is selected */
+        #matrix-options {
+            display: none;
+        }
+        /* Responsive styles */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            form {
+                max-width: 100%;
+            }
+            .button {
+                max-width: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced AI Math Solver</h1>
+        <h3 style="text-align: center; color: #2054a3;"><strong>by Saim</strong></h3>
+        <form action="/solve" method="post" onsubmit="return validateForm()">
+            <label for="operation">Choose an operation:</label>
+            <select id="operation" name="operation" onchange="showOptions()">
+                <option value="solve">Solve Equation</option>
+                <option value="differentiate">Differentiate</option>
+                <option value="integrate">Integrate</option>
+                <option value="simplify">Simplify</option>
+                <option value="diff_eq">Solve Differential Equation</option>
+                <option value="matrix">Matrix Operations</option>
+                <option value="limit">Limit Calculation</option>
+                <option value="series">Series Expansion</option>
+                <option value="sys_eq">System of Equations</option>
+                <option value="taylor_series">Taylor Series Expansion</option>
+                <option value="partial_fraction">Partial Fraction Decomposition</option>
+                <option value="surface_integral">Surface Integral</option>
+                <option value="line_integral">Line Integral</option>
+                <option value="volume_integral">Volume Integral</option>
+                <option value="parametric_surface">Parametric Surface Area</option>
+                <option value="gradient">Gradient</option>
+                <option value="divergence">Divergence</option>
+                <option value="curl">Curl</option>
+                <option value="complex">Complex Number Operations</option>
+                <option value="polynomial">Polynomial Operations</option>
+            </select>
+            <label for="expression">Enter your expression:</label>
+            <input type="text" id="expression" placeholder="e.g: 2*x + y = 1; x - y = 2" name="expression" required>
+            <label for="variable">Variable:</label>
+            <input type="text" id="variable" name="variable" placeholder="Default is (x)">
+            <div id="matrix-options" style="display: none;">
+                <label for="matrix_operation">Matrix Operation:</label>
+                <select id="matrix_operation" name="matrix_operation">
+                    <option value="inverse">Inverse</option>
+                    <option value="determinant">Determinant</option>
+                    <option value="eigenvalues">Eigenvalues</option>
+                </select>
+            </div>
+            <label for="limit_value" id="limit_label" style="display:none;">Limit Value:</label>
+            <input type="text" id="limit_value" name="limit_value" placeholder="Enter limit value" style="display:none;">
+            <label for="series_order" id="series_label" style="display:none;">Series Expansion Order:</label>
+            <input type="number" id="series_order" name="series_order" min="1" placeholder="Enter order (default: 6)" style="display:none;">
+            <label for="parametric_bounds" id="parametric_label" style="display:none;">Parametric Bounds:</label>
+            <input type="text" id="parametric_bounds" name="parametric_bounds" placeholder="e.g: a=0,b=1" style="display:none;">
+            <button type="submit" class="button">
+                Solution
+                <svg fill="currentColor" viewBox="0 0 24 24" class="icon">
+                    <!-- Add your SVG icon code here -->
+                    <path clip-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" fill-rule="evenodd"></path>
+                </svg>
+            </button>
+        </form>
+    </div>
+    <script>
+       function showOptions() {
+            var operation = document.getElementById("operation").value;
+            var matrixOptions = document.getElementById("matrix-options");
+            var limitLabel = document.getElementById("limit_label");
+            var limitValue = document.getElementById("limit_value");
+            var seriesLabel = document.getElementById("series_label");
+            var seriesOrder = document.getElementById("series_order");
+            var parametricLabel = document.getElementById("parametric_label");
+            var parametricBounds = document.getElementById("parametric_bounds");
+            var variableInput = document.getElementById("variable");
+
+            // Examples object for each operation
+            var examples = {
+                solve: "e.g: (x**2 - 4)/(x - 2)",
+                differentiate: "e.g: 3*x**2 + 2*x + 1",
+                integrate: "e.g: 2*x**3 + 3*x**2 + 4*x + 5",
+                simplify: "e.g: sqrt(x**2 + y**2)",
+                diff_eq: "e.g: y'' + 2*y' + y = 0",
+                matrix: "Enter a matrix..", // No specific example for matrix operations
+                limit: "e.g: 1/(x - 1)",
+                series: "e.g: sin(x)",
+                sys_eq: "e.g: 2*x + y = 1; x - y = 2",
+                taylor_series: "e.g: sin(x)",
+                partial_fraction: "e.g: 1/(x**2 + x)",
+                surface_integral: "e.g: f(x,y,z) over surface S",
+                line_integral: "e.g: F(x,y,z) along curve C",
+                volume_integral: "e.g: f(x,y,z) over volume V",
+                parametric_surface: "e.g: f(u,v) over surface S(u,v)",
+                gradient: "e.g: grad(f)",
+                divergence: "e.g: div(F)",
+                curl: "e.g: curl(F)",
+                complex: "e.g: (3+2j) + (4-3j)",
+                polynomial: "e.g: x**2 + 2*x + 1"
+            };
+
+            // Set the placeholder based on selected operation
+            document.getElementById("expression").placeholder = examples[operation];
+
+            // Hide all additional options by default
+            matrixOptions.style.display = "none";
+            limitLabel.style.display = "none";
+            limitValue.style.display = "none";
+            seriesLabel.style.display = "none";
+            seriesOrder.style.display = "none";
+            parametricLabel.style.display = "none";
+            parametricBounds.style.display = "none";
+
+            // Show relevant options based on selected operation
+            switch (operation) {
+                case "matrix":
+                    matrixOptions.style.display = "block";
+                    break;
+                case "limit":
+                    limitLabel.style.display = "block";
+                    limitValue.style.display = "block";
+                    break;
+                case "series":
+                    seriesLabel.style.display = "block";
+                    seriesOrder.style.display = "block";
+                    break;
+                case "parametric_surface":
+                    parametricLabel.style.display = "block";
+                    parametricBounds.style.display = "block";
+                    break;
+                case "complex":
+                    // No additional options needed for complex numbers
+                    variableInput.style.display = "none"; // Hide the variable input field
+                    break;
+                case "polynomial":
+                    // No additional options needed for polynomials
+                    variableInput.style.display = "block"; // Show the variable input field
+                    break;
+                default:
+                    variableInput.style.display = "block"; // Show the variable input field for other operations
+                    break;
+            }
+        }
+
+        function validateForm() {
+            var operation = document.getElementById("operation").value;
+            var expression = document.getElementById("expression").value.trim();
+
+            // Additional validation based on operation if needed
+            if (operation === "limit") {
+                var limitValue = document.getElementById("limit_value").value.trim();
+                if (isNaN(limitValue)) {
+                    alert("Please enter a valid limit value.");
+                    return false;
+                }
+            } else if (operation === "series") {
+                var seriesOrder = document.getElementById("series_order").value.trim();
+                if (isNaN(seriesOrder) || seriesOrder <= 0) {
+                    alert("Please enter a valid series expansion order (a positive integer).");
+                    return false;
+                }
+            } else if (operation === "parametric_surface") {
+                var parametricBounds = document.getElementById("parametric_bounds").value.trim();
+                if (!parametricBounds.match(/^a=(-?\d*\.?\d*),b=(-?\d*\.?\d*)$/)) {
+                    alert("Please enter parametric bounds in the correct format: a=number,b=number.");
+                    return false;
+                }
+            }
+
+            // Basic expression validation (not empty)
+            if (expression === "") {
+                alert("Please enter an expression.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>
+{% endblock %}

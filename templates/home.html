@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}হোম{% endblock %}
+{% block content %}
+<div class="container">
+    
+        <style>
+            /* CSS styles */
+            .post-card {
+                width: 100%; /* Allow cards to be responsive */
+                max-width: 1000px; /* Set a maximum width for the card */
+                margin-bottom: 20px; /* Adjust margin between cards */
+                border: 1px solid #ddd; /* Add a border for separation */
+                border-radius: 5px; /* Add rounded corners */
+                overflow: hidden; /* Ensure content does not overflow */
+                display: flex;
+                flex-direction: column;
+            }
+    css
+    Copy code
+        .card-body {
+            padding: 20px; /* Adjust padding inside card body */
+            flex: 1; /* Ensure body stretches to fill card */
+        }
+    
+        .card-title {
+            font-size: 1.5rem; /* Larger font size for title */
+            margin-bottom: 10px; /* Adjust spacing around title */
+        }
+    
+        .card-text {
+            font-size: 1.1rem; /* Larger font size for content */
+            margin-bottom: 10px; /* Adjust spacing around content */
+            line-height: 1.6; /* Increase line height for readability */
+            flex: 1; /* Allow content to stretch */
+        }
+    
+        .card-footer {
+            padding: 10px 20px; /* Padding for footer */
+            text-align: left; /* Align buttons to the left */
+            border-top: 1px solid #ddd; /* Add a border above footer */
+        }
+    
+        .btn-primary {
+            padding: 8px 12px; /* Adjust padding inside button */
+            font-size: 1rem; /* Font size for button text */
+        }
+    
+        .author {
+            font-size: 0.875rem; /* Font size for author */
+            color: #999; /* Light gray color for author */
+            margin-top: 5px; /* Adjust spacing above author */
+        }
+    
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            text-align: center;
+        }
+    
+        .flash-message {
+            padding: 15px 30px;
+            background-color: rgba(76, 175, 80, 0.9); /* Green background color */
+            color: #fff; /* White text color */
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Box shadow */
+            animation: fadeInOut 3s ease-in-out; /* Animation */
+        }
+    
+        .flash-message p {
+            margin: 0;
+        }
+    
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+    <h1 class="my-4">সাম্প্রতিক পোস্টসমূহ</h1>
+    {% for post in posts %}
+    <div class="card mb-4 post-card">
+        <div class="card-body">
+            <h2 class="card-title">{{ post.title }}</h2>
+            <p class="card-text">{{ post.content[:150] }}...</p>
+            <div class="author">By {{ post.author }}</div>
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-primary">আরও পড়ুন&rarr;</a>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page > 1 %}
+            <li class="page-item"><a class="page-link" href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}">প্রথম</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page - 1 }}{% if search_query %}&q={{ search_query }}{% endif %}">&laquo;</a></li>
+            {% endif %}
+
+            {% for num in range(1, total_pages + 1) %}
+            {% if num == page %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <li class="page-item"><a class="page-link" href="?page={{ page + 1 }}{% if search_query %}&q={{ search_query }}{% endif %}">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ total_pages }}{% if search_query %}&q={{ search_query }}{% endif %}">শেষ</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div id="flash-messages" class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        // JavaScript to remove flash messages after 6 seconds
+        setTimeout(function(){
+            var flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.remove();
+            }
+        }, 6000);
+    </script>
+    {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}

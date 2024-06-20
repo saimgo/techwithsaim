@@ -1,0 +1,24 @@
+<!-- category_posts.html -->
+{% extends "base.html" %}
+{% block title %}Posts - {{ category }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-5">পোস্টসমূহ-</h1>
+    <p class="lead">"{{ category }}" এর জন্য {{ posts|length }} টি পোস্ট পাওয়া গেছে </p>
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <p class="card-text">{{ post.content[:200] }}...</p>
+                    <p class="card-text">Author: {{ post.author }}</p>
+                    <p class="card-text">Category: {{ post.category }}</p>
+                    <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-primary">আরও পড়ুন...</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

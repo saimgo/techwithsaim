@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="post-header">
+        <a href="/" class="back-button">&#11176; Back</a>
+        <h1 class="post-title">{{ post.title }}</h1>
+        <p class="post-author">
+            Written by: {{ post.author }}
+        
+        </p>
+    </div>
+    
+    <div class="post-content">
+        {% for paragraph in post.content.split('\n') %}
+        <p>{{ paragraph }}</p>
+        {% endfor %}
+    </div>
+
+    <!-- Comment Section -->
+    <div class="comments-section">
+        <h2>Comments</h2>
+        <form method="POST" action="/post/{{ post.id }}" class="comment-form">
+            <input type="text" name="name" placeholder="Your name" required>
+            <textarea name="comment" rows="3" placeholder="Your comment" required></textarea>
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <button type="submit" class="submit-button">Submit</button>
+        </form>
+
+        {% for comment in comments %}
+        <div class="comment">
+            <div class="comment-avatar">{{ comment.name[0] }}</div>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <h4 class="comment-author">{{ comment.name }}</h4>
+                    <span class="comment-time">{{ comment.timestamp }}</span>
+                    {% if 'admin_id' in session %}
+                        <form method="POST" action="/block_user/{{ comment.user_id }}" style="display: inline;">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            <button type="submit" class="admin-button">Block User</button>
+                        </form>
+                        <form method="POST" action="/delete_comment/{{ comment.id }}" style="display: inline;">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            <button type="submit" class="admin-button">Delete Comment</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <p>{{ comment.text }}</p>
+        
+                {% for reply in comment_replies[comment.id] %}
+                <div class="reply">
+                    <div class="reply-avatar">{{ reply.name[0] }}</div>
+                    <div class="reply-content">
+                        <div class="reply-header">
+                            <h5 class="reply-author">{{ reply.name }}</h5>
+                            <span class="reply-time">{{ reply.timestamp }}</span>
+                            {% if 'admin_id' in session %}
+                                <form method="POST" action="/block_user/{{ reply.user_id }}" style="display: inline;">
+                                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                                    <button type="submit" class="admin-button">Block User</button>
+                                </form>
+                                <form method="POST" action="/delete_reply/{{ reply.id }}" style="display: inline;">
+                                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                                    <button type="submit" class="admin-button">Delete Reply</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <p>{{ reply.text }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+                <a href="#" class="reply-toggle" onclick="toggleReplyForm('{{ comment.id }}')">Reply</a>
+                <div id="reply-form-{{ comment.id }}" class="reply-form" style="display: none;">
+                    <form method="POST" action="/post/{{ post.id }}" class="reply-form-content">
+                        <input type="text" name="name" placeholder="Your name" required>
+                        <textarea name="reply" rows="2" placeholder="Your reply" required></textarea>
+                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <button type="submit" class="submit-button">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+    </div>
+</div>
+
+
+<style>
+    /* Your CSS styles here */
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        color: #333;
+    }
+    .post-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    .back-button {
+        margin-bottom: 10px;
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .post-title {
+        margin: 0;
+        font-size: 2em;
+        font-weight: bold;
+    }
+    .post-author {
+        color: #888;
+        margin-bottom: 20px;
+    }
+    /* Example CSS for like and dislike buttons */
+    .like-button, .dislike-button {
+        padding: 5px 10px;
+        font-size: 1.2em;
+        text-decoration: none;
+        color: #007BFF;
+        margin-right: 10px;
+    }
+
+    .like-button:hover, .dislike-button:hover {
+        color: #0056b3;
+    }
+
+    .post-content p {
+        line-height: 1.6;
+    }
+    .comments-section {
+        margin-top: 40px;
+    }
+    .comments-section h2 {
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+    }
+    .comment-form, .reply-form-content {
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+    }
+    .comment-form input, .comment-form textarea, .reply-form-content input, .reply-form-content textarea {
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .comment-form input:focus, .comment-form textarea:focus, .reply-form-content input:focus, .reply-form-content textarea:focus {
+        border-color: #007BFF;
+    }
+    .comment-form .submit-button, .reply-form-content .submit-button {
+        padding: 10px 15px;
+        font-size: 1em;
+        background-color: #007BFF;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .comment-form .submit-button:hover, .reply-form-content .submit-button:hover {
+        background-color: #0056b3;
+    }
+    .comment {
+        display: flex;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .comment-avatar, .reply-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #6a6c6f;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        margin-right: 10px;
+    }
+    .comment-content, .reply-content {
+        flex: 1;
+    }
+    .comment-header, .reply-header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5px;
+    }
+    .comment-author, .reply-author {
+        margin: 0;
+        font-size: 1.2em;
+    }
+    .comment-time, .reply-time {
+        color: #888;
+        font-size: 0.9em;
+    }
+    .reply {
+        display: flex;
+        margin-top: 10px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 8px;
+    }
+    .reply-content {
+        flex: 1;
+    }
+    .reply-toggle {
+        cursor: pointer;
+        color: #007BFF;
+        text-decoration: underline;
+        font-size: 0.9em;
+        margin-top: 10px;
+    }
+    
+    /* Existing styles */
+    
+    /* Style for admin buttons (Block User and Delete Comment) */
+    .admin-button {
+        margin-left: 10px;
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+        background-color: transparent;
+        border: 1px solid red;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .admin-button:hover {
+        background-color: red;
+        color: white;
+    }
+    
+    /* Style for the container of admin buttons */
+    .admin-button-container {
+        margin-top: 10px;
+    }
+    
+    .admin-button-container form {
+        display: inline;
+        margin-right: 10px; /* Adjust as needed */
+    }
+</style>
+
+<script>
+    function toggleReplyForm(commentId) {
+        var form = document.getElementById('reply-form-' + commentId);
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

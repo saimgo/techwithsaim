@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Search Results - LazyCoder{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">সার্চ ফলাফল সমূহ</h1>
+    <p class="lead">"{{ query }}" এর জন্য {{ posts|length }} টি ফলাফল পাওয়া গেছে </p>
+    <div class="list-group">
+        {% for post in posts %}
+        <a href="{{ url_for('post', post_id=post.id) }}" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ post.title }}</h5>
+                <small>Author: {{ post.author }}</small>
+            </div>
+            <p class="mb-1">{{ post.content[:100] }}{% if post.content|length > 100 %}... <a href="{{ url_for('post', post_id=post.id) }}" class="btn btn-primary">Read More&rarr;</a>{% endif %}</p>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page > 1 %}
+            <li class="page-item"><a class="page-link" href="?page=1&q={{ query }}">প্রথম</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ page - 1 }}&q={{ query }}">&laquo;</a></li>
+            {% endif %}
+
+            {% for num in range(1, total_pages + 1) %}
+            {% if num == page %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ query }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <li class="page-item"><a class="page-link" href="?page={{ page + 1 }}&q={{ query }}">&raquo;</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ total_pages }}&q={{ query }}">শেষ</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

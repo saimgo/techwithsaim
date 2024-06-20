@@ -1,0 +1,17 @@
+<!-- notifications.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Notifications</h2>
+    <ul>
+        {% for notification in notifications %}
+            <li>
+                <p>{{ notification[2] }}</p>  {# Assuming message is the third column in notifications table #}
+                <small>{{ notification[4] }}</small>  {# Assuming timestamp is the fifth column in notifications table #}
+                {% if notification[3] %}
+                    <a href="{{ notification[3] }}">View</a>  {# Assuming link is the fourth column in notifications table #}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
