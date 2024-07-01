@@ -69,19 +69,19 @@ def create_tables():
     
 
     # Add initial admin user
-    admin_email = 'hello.saim@proton.me'
-    admin_password = 'saim2024@stella'
+    admin_email = 'admin@admin.com'
+    admin_password = 'adminpassword'
     cursor.execute('''
         INSERT OR IGNORE INTO admins (email, password) VALUES (?, ?)
     ''', (admin_email, admin_password))
 
     # Add initial user
-    user_name = 'Sayaem Arafat'
-    user_phone = '+8801939180762'
-    user_email = 'coder.saim@outlook.com'
-    user_school = 'Gurudayal Govt. College'
+    user_name = 'Jhon Doe'
+    user_phone = '+88019XXXXXXXX'
+    user_email = 'user@user.com
+    user_school = 'X College'
     user_image = '/src/saim.jpg'
-    user_password = 'saim2024'
+    user_password = 'userpassword'
     cursor.execute('''
         INSERT OR IGNORE INTO registrations (name, phone, email, school, image, password) VALUES (?, ?, ?, ?, ?, ?)
     ''', (user_name, user_phone, user_email, user_school, user_image, user_password))
